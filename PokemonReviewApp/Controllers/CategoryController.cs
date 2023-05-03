@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
+using PokemonReviewApp.Cache;
 using PokemonReviewApp.Dto;
 using PokemonReviewApp.Interfaces;
 using PokemonReviewApp.Models;
@@ -15,22 +16,31 @@ namespace PokemonReviewApp.Controllers
     {
         public readonly ICategoryService _categoryService;
         public readonly IMapper _mapper;
-        public CategoryController(ICategoryService categoryService, IMapper mapper)
+        private readonly ICacheService _cacheService;
+        public CategoryController(ICategoryService categoryService, IMapper mapper, ICacheService cacheService)
         {
             _categoryService = categoryService;
             _mapper = mapper;
+            _cacheService = cacheService;
         }
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Category>))]
         public IActionResult GetCategories()
         {
-            var categories = _mapper.Map<List<CategoryDto>>(_categoryService.GetCategories());
+            const string key = "pokemons-all-category";
+            var cached = _cacheService.GetValue<IEnumerable<Category>>(key);
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (cached == null)
+            {
+                var categories = _mapper.Map<List<CategoryDto>>(_categoryService.GetCategories());
 
-            return Ok(categories);
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                return Ok(categories);
+            }
+            return Ok(cached);
         }
 
         [HttpGet("{categoryId}")]
@@ -91,6 +101,9 @@ namespace PokemonReviewApp.Controllers
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
             }
+
+            // drop/update cache for this entity
+
             return Ok("Successfully created");
         }
 

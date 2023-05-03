@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using PokemonReviewApp.Cache;
 using PokemonReviewApp.Data;
 using PokemonReviewApp.Extensions;
 using PokemonReviewApp.Interfaces;
 using PokemonReviewApp.Services;
+using StackExchange.Redis;
 using System.Text.Json.Serialization;
 
 namespace PokemonReviewApp
@@ -14,7 +16,17 @@ namespace PokemonReviewApp
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddDbContext<DatabaseAuthContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("Auth")));
+            builder.Services.AddIdentityServices(builder.Configuration);
+            builder.Services.AddScoped<TokenService>();
+            builder.Services.AddScoped<RefreshTokenService>();
 
+            builder.Services.AddScoped<ICacheService, RedisCacheService>();
+            builder.Services.AddSingleton<IConnectionMultiplexer>(
+                ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")));
+
+            builder.Services.AddMemoryCache();
             builder.Services.AddControllers();
             builder.Services.AddTransient<Seed>();
             builder.Services.AddControllers().AddJsonOptions(x =>

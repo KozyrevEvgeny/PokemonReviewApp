@@ -1,0 +1,31 @@
+name: .net PR check
+
+on: 
+    push:
+        branches: [ "master" ]
+    pull_request:
+        branches: [ "master" ]
+
+jobs: 
+    build-and-test:
+        name: Buid and tests
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v3
+  
+        - name: Setup .NET
+          uses: actions/setup-dotnet@v3
+          with:
+            dotnet-version: 6.0.x
+
+        - name: Restore dependencies
+          run: dotnet restore
+          working-directory: PokemonReviewApp
+
+        - name: Build
+          run: dotnet build --no-restore
+          working-directory: PokemonReviewApp
+
+        - name: Tests
+          run: dotnet test --no-build
+          working-directory: PokemonReviewApp.Tests

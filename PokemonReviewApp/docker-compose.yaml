@@ -1,0 +1,13 @@
+﻿version: '3.4'
+
+services:
+    api: 
+        image: pokemon-review-app
+        build:
+            context: .
+        ports:
+            - "8080:80"
+        environment: 
+            ASPNETCORE_ENVIRONMENT: Development
+
+            #docker-compose up --build

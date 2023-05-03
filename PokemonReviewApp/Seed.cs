@@ -1,16 +1,27 @@
-﻿using PokemonReviewApp.Data;
+﻿using Microsoft.AspNetCore.Identity;
+using PokemonReviewApp.Constants;
+using PokemonReviewApp.Data;
 using PokemonReviewApp.Models;
+using PokemonReviewApp.Models.Auth;
 
 namespace PokemonReviewApp
 {
     public class Seed
     {
         private readonly DataContext _context;
-        public Seed(DataContext context)
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
+        private readonly UserManager<User> _userManager;
+
+        public Seed(
+            DataContext context,
+            RoleManager<IdentityRole<int>> roleManager,
+            UserManager<User> userManager)
         {
             _context = context;
+            _roleManager = roleManager;
+            _userManager = userManager;
         }
-        public void SeedDataContext()
+        public async Task SeedDataContext()
         {
             if (!_context.PokemonOwners.Any())
             {
@@ -113,6 +124,19 @@ namespace PokemonReviewApp
                 _context.PokemonOwners.AddRange(pokemonOwners);
                 _context.SaveChanges();
             }
+
+            //if (!_roleManager.Roles.Any())
+            //{
+            //    var userRole = new IdentityRole<int>
+            //    {
+            //        Name = CustomIdentityConstants.Roles.User
+            //    };
+
+            //    await _roleManager.CreateAsync(userRole);
+
+            //    var someUser = new User(); //это имитация полученного из бд пользователя
+            //    await _userManager.AddToRoleAsync(someUser, CustomIdentityConstants.Roles.User);
+            //}
         }
     }
 }

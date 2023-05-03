@@ -33,7 +33,7 @@ namespace PokemonReviewApp.Tests.Controllers
             var pokemons = A.Fake<ICollection<PokemonDto>>();
             var pokemonList = A.Fake<List<PokemonDto>>();
             A.CallTo(() => _mapper.Map<List<PokemonDto>>(pokemons)).Returns(pokemonList);
-            var controller = new PokemonController(_pokemonService, _reviewService, _mapper);
+            var controller = new PokemonController(_pokemonService, _mapper, _reviewService);
 
             //Act
             var result = controller.GetPokemons();
