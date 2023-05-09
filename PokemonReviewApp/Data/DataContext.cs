@@ -1,9 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PokemonReviewApp.Models;
+using PokemonReviewApp.Models.Auth;
 
 namespace PokemonReviewApp.Data
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<User, IdentityRole<int>, int>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
         public DbSet<Category> Categories { get; set; }
@@ -14,9 +17,15 @@ namespace PokemonReviewApp.Data
         public DbSet<PokemonCategory> PokemonCategories { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Reviewer> Reviewers { get; set;}
+        public DbSet<RefreshToken> RefreshToken { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<RefreshToken>()
+                .HasKey(t => new { t.UserId, t.Token });
+
             modelBuilder.Entity<PokemonCategory>()
                 .HasKey(pc => new { pc.PokemonId, pc.CategoryId });
             modelBuilder.Entity<PokemonCategory>()

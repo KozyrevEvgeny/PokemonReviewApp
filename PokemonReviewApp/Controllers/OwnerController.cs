@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PokemonReviewApp.Dto;
@@ -23,6 +24,7 @@ namespace PokemonReviewApp.Controllers
             _countryService = countryService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Owner>))]
         public IActionResult GetOwners()
@@ -35,6 +37,7 @@ namespace PokemonReviewApp.Controllers
             return Ok(owners);
         }
 
+        [AllowAnonymous]
         [HttpGet("{ownerId}")]
         [ProducesResponseType(200, Type = typeof(Owner))]
         [ProducesResponseType(400)]
@@ -51,6 +54,7 @@ namespace PokemonReviewApp.Controllers
             return Ok(owner);
         }
 
+        [AllowAnonymous]
         [HttpGet("{ownerId}/pokemon")]
         [ProducesResponseType(200, Type = typeof(Owner))]
         [ProducesResponseType(400)]
@@ -70,6 +74,7 @@ namespace PokemonReviewApp.Controllers
             return Ok(owner);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -103,6 +108,7 @@ namespace PokemonReviewApp.Controllers
             return Ok("Successfully created");
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("{ownerId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
@@ -131,6 +137,7 @@ namespace PokemonReviewApp.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{ownerId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]

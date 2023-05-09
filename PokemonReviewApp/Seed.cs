@@ -125,18 +125,6 @@ namespace PokemonReviewApp
                 _context.SaveChanges();
             }
 
-            //if (!_roleManager.Roles.Any())
-            //{
-            //    var userRole = new IdentityRole<int>
-            //    {
-            //        Name = CustomIdentityConstants.Roles.User
-            //    };
-
-            //    await _roleManager.CreateAsync(userRole);
-
-            //    var someUser = new User(); //это имитация полученного из бд пользователя
-            //    await _userManager.AddToRoleAsync(someUser, CustomIdentityConstants.Roles.User);
-            //}
         }
     }
 }

@@ -6,9 +6,9 @@ namespace PokemonReviewApp.Services
 {
     public class RefreshTokenService
     {
-        private readonly DatabaseAuthContext _context;
+        private readonly DataContext _context;
 
-        public RefreshTokenService(DatabaseAuthContext context)
+        public RefreshTokenService(DataContext context)
         {
             _context = context;
         }

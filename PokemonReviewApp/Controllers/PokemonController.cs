@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using PokemonReviewApp.Data;
@@ -23,6 +24,7 @@ namespace PokemonReviewApp.Controllers
             _mapper = mapper;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Pokemon>))]
         public IActionResult GetPokemons()
@@ -35,6 +37,7 @@ namespace PokemonReviewApp.Controllers
             return Ok(pokemons);
         }
 
+        [AllowAnonymous]
         [HttpGet("{pokemonId}")]
         [ProducesResponseType(200, Type = typeof(Pokemon))]
         [ProducesResponseType(400)]
@@ -51,6 +54,7 @@ namespace PokemonReviewApp.Controllers
             return Ok(pokemon);
         }
 
+        [AllowAnonymous]
         [HttpGet("{pokemonId}/rating")]
         [ProducesResponseType(200, Type = typeof(decimal))]
         [ProducesResponseType(400)]
@@ -67,6 +71,7 @@ namespace PokemonReviewApp.Controllers
             return Ok(reting);
         }
 
+        [Authorize(Roles ="admin")]
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -98,6 +103,7 @@ namespace PokemonReviewApp.Controllers
             return Ok("Successfully created");
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("{pokemonId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
@@ -129,6 +135,7 @@ namespace PokemonReviewApp.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{pokemonId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]

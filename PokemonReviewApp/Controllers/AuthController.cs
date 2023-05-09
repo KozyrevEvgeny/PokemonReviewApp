@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PokemonReviewApp.Constants;
 using PokemonReviewApp.Data;
 using PokemonReviewApp.Dto;
 using PokemonReviewApp.Models;
@@ -18,19 +20,28 @@ namespace PokemonReviewApp.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly TokenService _tokenService;
         private readonly RefreshTokenService _refreshTokenService;
-        private readonly DatabaseAuthContext _context;
+        private readonly DataContext _context;
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
+        private readonly UserManager<IdentityUser<int>> _user2Manager;
 
         public AuthController(UserManager<User> userManager,
             SignInManager<User> signInManager,
             TokenService tokenService,
-            RefreshTokenService refreshTokenService)
+            RefreshTokenService refreshTokenService,
+            DataContext context,
+            RoleManager<IdentityRole<int>> roleManager,
+            UserManager<IdentityUser<int>> user2Manager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
             _refreshTokenService = refreshTokenService;
+            _context = context;
+            _roleManager = roleManager;
+            _user2Manager = user2Manager;
         }
 
+        [AllowAnonymous]
         [HttpPost("signup")]
         public async Task<IActionResult> SignUpAsync(SignUpDto dto)
         {
@@ -47,6 +58,7 @@ namespace PokemonReviewApp.Controllers
             return Ok();
         }
 
+        [AllowAnonymous]
         [HttpPost("signin")]
         public async Task<ActionResult<SignInResultDto>> SignInAsync(SignInDto dto)
         {
@@ -63,7 +75,7 @@ namespace PokemonReviewApp.Controllers
             var signInResult = await _signInManager
                 .CheckPasswordSignInAsync(user, dto.Password, false);
 
-            if (signInResult.Succeeded)
+            if (!signInResult.Succeeded)
             {
                 return Unauthorized();
             }
@@ -75,6 +87,47 @@ namespace PokemonReviewApp.Controllers
             };
 
             return result;
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<ActionResult> CreateUserAsync()
+        {
+            var roles = new List<IdentityRole<int>>()
+            {
+                new IdentityRole<int>()
+                {
+                    Name = CustomIdentityConstants.Roles.Admin
+                },
+                new IdentityRole<int>()
+                {
+                    Name = CustomIdentityConstants.Roles.User
+                },
+                new IdentityRole<int>()
+                {
+                    Name = CustomIdentityConstants.Roles.Reviewer
+                },
+            };
+            var tasks = new List<Task>();
+
+            foreach (var role in roles)
+            {
+                tasks.Add(_roleManager.CreateAsync(role));
+            }
+
+            await Task.WhenAll(tasks.ToArray());
+
+            var adminUser = new IdentityUser<int>()
+            {
+                UserName = "admin",
+                Email = "admin@admin.com"
+            };
+
+            await _user2Manager.CreateAsync(adminUser, "admin's_pa$$w0rd");
+
+            await _user2Manager.AddToRoleAsync(adminUser, CustomIdentityConstants.Roles.Admin);
+
+            return Ok();
         }
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace PokemonReviewApp.Migrations.Auth
+namespace PokemonReviewApp.Migrations
 {
     public partial class InitialAuth : Migration
     {
@@ -157,7 +157,7 @@ namespace PokemonReviewApp.Migrations.Auth
                 });
 
             migrationBuilder.CreateTable(
-                name: "RefreshToken",
+                name: "RefreshTokens",
                 columns: table => new
                 {
                     Token = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -165,9 +165,9 @@ namespace PokemonReviewApp.Migrations.Auth
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RefreshToken", x => new { x.UserId, x.Token });
+                    table.PrimaryKey("PK_RefreshTokens", x => new { x.UserId, x.Token });
                     table.ForeignKey(
-                        name: "FK_RefreshToken_AspNetUsers_UserId",
+                        name: "FK_RefreshTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -232,7 +232,7 @@ namespace PokemonReviewApp.Migrations.Auth
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "RefreshToken");
+                name: "RefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
@@ -24,6 +25,7 @@ namespace PokemonReviewApp.Controllers
             _cacheService = cacheService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Category>))]
         public IActionResult GetCategories()
@@ -43,6 +45,7 @@ namespace PokemonReviewApp.Controllers
             return Ok(cached);
         }
 
+        [AllowAnonymous]
         [HttpGet("{categoryId}")]
         [ProducesResponseType(200, Type = typeof(Category))]
         [ProducesResponseType(400)]
@@ -59,6 +62,7 @@ namespace PokemonReviewApp.Controllers
             return Ok(category);
         }
 
+        [AllowAnonymous]
         [HttpGet("pokemon/{categoryId}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Pokemon>))]
         [ProducesResponseType(400)]
@@ -73,6 +77,7 @@ namespace PokemonReviewApp.Controllers
             return Ok(pokemons);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -107,6 +112,7 @@ namespace PokemonReviewApp.Controllers
             return Ok("Successfully created");
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("{categoryId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
@@ -135,6 +141,7 @@ namespace PokemonReviewApp.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{categoryId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]

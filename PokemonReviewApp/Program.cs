@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PokemonReviewApp.Cache;
 using PokemonReviewApp.Data;
@@ -16,11 +17,16 @@ namespace PokemonReviewApp
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddDbContext<DatabaseAuthContext>(options =>
+            builder.Services.AddDbContext<DataContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("Auth")));
             builder.Services.AddIdentityServices(builder.Configuration);
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<RefreshTokenService>();
+            builder.Services.AddIdentityCore<IdentityUser<int>>()
+                .AddRoles<IdentityRole<int>>()
+                .AddUserManager<UserManager<IdentityUser<int>>>()
+                .AddRoleManager<RoleManager<IdentityRole<int>>>()
+                .AddEntityFrameworkStores<DataContext>();
 
             builder.Services.AddScoped<ICacheService, RedisCacheService>();
             builder.Services.AddSingleton<IConnectionMultiplexer>(
@@ -60,6 +66,7 @@ namespace PokemonReviewApp
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

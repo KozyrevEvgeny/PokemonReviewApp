@@ -22,7 +22,7 @@ namespace PokemonReviewApp.Extensions
                 .AddRoleManager<RoleManager<IdentityRole<int>>>()
                 .AddUserManager<UserManager<User>>()
                 .AddSignInManager<SignInManager<User>>()
-                .AddEntityFrameworkStores<DatabaseAuthContext>();
+                .AddEntityFrameworkStores<DataContext>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PokemonReviewApp.Dto;
@@ -24,6 +25,7 @@ namespace PokemonReviewApp.Controllers
             _reviewerService = reviewerService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Review>))]
         public IActionResult GetReviews()
@@ -36,6 +38,7 @@ namespace PokemonReviewApp.Controllers
             return Ok(review);
         }
 
+        [AllowAnonymous]
         [HttpGet("{reviewId}")]
         [ProducesResponseType(200, Type = typeof(Review))]
         [ProducesResponseType(400)]
@@ -52,6 +55,7 @@ namespace PokemonReviewApp.Controllers
             return Ok(review);
         }
 
+        [AllowAnonymous]
         [HttpGet("pokemon/{pokemonId}")]
         [ProducesResponseType(200, Type = typeof(Review))]
         [ProducesResponseType(400)]
@@ -65,6 +69,7 @@ namespace PokemonReviewApp.Controllers
             return Ok(reviews);
         }
 
+        [Authorize(Roles = "admin,reviewer")]
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -99,6 +104,7 @@ namespace PokemonReviewApp.Controllers
             return Ok("Successfully created");
         }
 
+        [Authorize(Roles = "admin,reviewer")]
         [HttpPut("{reviewId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
@@ -127,6 +133,7 @@ namespace PokemonReviewApp.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "admin,reviewer")]
         [HttpDelete("{reviewId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
